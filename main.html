@@ -245,9 +245,9 @@
         </div>
     </div>
 
-    <!-- 👑 完整視覺化管理者後台 Modal (4 分頁版) -->
+    <!-- 👑 全面升級管理者後台 Modal (6 大分頁系統) -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+        <div class="bg-white rounded-2xl w-full max-w-5xl max-h-[92vh] overflow-hidden flex flex-col shadow-2xl">
             <div class="bg-stone-900 text-amber-200 p-4 flex justify-between items-center border-b border-amber-600/30">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-sliders text-amber-400 text-lg"></i>
@@ -257,53 +257,83 @@
             </div>
             
             <div class="bg-stone-100 border-b border-stone-200 p-2 flex space-x-2 overflow-x-auto text-xs font-bold">
-                <button onclick="app.switchAdminTab('products')" id="tab-btn-products" class="px-4 py-2 rounded-lg bg-amber-600 text-white">📦 商品上下架</button>
-                <button onclick="app.switchAdminTab('orders')" id="tab-btn-orders" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">📋 訂單紀錄檢視</button>
-                <button onclick="app.switchAdminTab('finance')" id="tab-btn-finance" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">📊 財務與損益</button>
-                <button onclick="app.switchAdminTab('chats')" id="tab-btn-chats" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">💬 對話紀錄備份</button>
+                <button onclick="app.switchAdminTab('products')" id="tab-btn-products" class="px-3.5 py-2 rounded-lg bg-amber-600 text-white whitespace-nowrap">📦 商品上下架管理</button>
+                <button onclick="app.switchAdminTab('orders')" id="tab-btn-orders" class="px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap">📋 訂單系統與手動結單</button>
+                <button onclick="app.switchAdminTab('customers')" id="tab-btn-customers" class="px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap">👥 客戶資料管理</button>
+                <button onclick="app.switchAdminTab('shipping')" id="tab-btn-shipping" class="px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap">📦 出貨明細單</button>
+                <button onclick="app.switchAdminTab('finance')" id="tab-btn-finance" class="px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap">📊 財務與損益</button>
+                <button onclick="app.switchAdminTab('chats')" id="tab-btn-chats" class="px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap">💬 對話紀錄備份</button>
             </div>
 
             <div class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
-                <!-- 上下架管理 -->
+                <!-- 1. 商品上下架管理 (現流與冷凍完全獨立分開，支援圖片網址與庫存) -->
                 <div id="admin-tab-products" class="space-y-6">
                     <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3">
-                        <h4 class="font-bold text-amber-900 text-base"><i class="fa-solid fa-plus-circle mr-1"></i>快速新增商品上架</h4>
+                        <h4 class="font-bold text-amber-900 text-base"><i class="fa-solid fa-plus-circle mr-1"></i>快速新增商品上架 (支援自訂圖片與庫存)</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <input id="new-p-name" type="text" placeholder="商品名稱 (如: 野生紅甘)" class="p-2 border rounded">
-                            <input id="new-p-spec" type="text" placeholder="規格 (如: 300g±10%)" class="p-2 border rounded">
-                            <input id="new-p-price" type="number" placeholder="售價 NT$" class="p-2 border rounded">
-                            <input id="new-p-stock" type="number" placeholder="初始庫存 (如: 99)" class="p-2 border rounded">
-                            <select id="new-p-type" class="p-2 border rounded">
+                            <input id="new-p-name" type="text" placeholder="商品名稱 (如: 野生紅甘)" class="p-2 border rounded text-xs">
+                            <input id="new-p-spec" type="text" placeholder="規格 (如: 400g±10%)" class="p-2 border rounded text-xs">
+                            <input id="new-p-price" type="number" placeholder="售價 NT$" class="p-2 border rounded text-xs">
+                            <input id="new-p-stock" type="number" placeholder="初始庫存 (如: 30)" class="p-2 border rounded text-xs">
+                            <select id="new-p-type" class="p-2 border rounded text-xs">
                                 <option value="fresh">🔥 每日現流專區</option>
                                 <option value="frozen">❄️ 冷凍常態專區</option>
                             </select>
-                            <button onclick="app.addNewProductFromAdmin()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded">一鍵新增上架</button>
+                            <input id="new-p-img" type="text" placeholder="圖片網址 (https://... 留空則使用預設)" class="p-2 border rounded text-xs">
                         </div>
+                        <button onclick="app.addNewProductFromAdmin()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded text-xs transition">一鍵新增上架</button>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-stone-800 mb-2">🔥 現流商品下架清單</h4>
-                        <div id="admin-fresh-list" class="space-y-2"></div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-stone-800 mb-2">❄️ 冷凍商品下架清單</h4>
-                        <div id="admin-frozen-list" class="space-y-2"></div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-rose-50/50 p-4 rounded-xl border border-rose-200 space-y-3">
+                            <h4 class="font-bold text-rose-900 text-base border-b border-rose-200 pb-2"><i class="fa-solid fa-fire text-rose-600 mr-1"></i>🔥 每日現流商品管理區</h4>
+                            <div id="admin-fresh-list" class="space-y-2"></div>
+                        </div>
+                        <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-200 space-y-3">
+                            <h4 class="font-bold text-blue-900 text-base border-b border-blue-200 pb-2"><i class="fa-solid fa-snowflake text-blue-600 mr-1"></i>❄️ 常態冷凍商品管理區</h4>
+                            <div id="admin-frozen-list" class="space-y-2"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 訂單紀錄檢視 -->
+                <!-- 2. 訂單系統與手動結單 -->
                 <div id="admin-tab-orders" class="hidden space-y-4">
                     <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="font-bold text-stone-900 text-base">買家下單紀錄 (同步試算表)</h4>
+                        <div>
+                            <h4 class="font-bold text-stone-900 text-base">訂單與對帳管理 (手動確認匯款才算結單)</h4>
+                            <p class="text-xs text-stone-500">核對買家填寫的匯款帳號末 5 碼與金額後，手動點擊按鈕確認收款完成結單。</p>
+                        </div>
                         <button onclick="app.clearOrderHistory()" class="text-xs bg-stone-200 hover:bg-stone-300 text-stone-700 px-2 py-1 rounded">清空測試紀錄</button>
                     </div>
                     <div id="admin-orders-list" class="space-y-3"></div>
                 </div>
 
-                <!-- 財務損益 -->
+                <!-- 3. 客戶資料管理 -->
+                <div id="admin-tab-customers" class="hidden space-y-4">
+                    <div class="border-b pb-2">
+                        <h4 class="font-bold text-stone-900 text-base">已購客戶資料彙整</h4>
+                        <p class="text-xs text-stone-500">系統自動根據歷史下單紀錄彙整之買家通訊錄與消費累計。</p>
+                    </div>
+                    <div id="admin-customers-list" class="space-y-2"></div>
+                </div>
+
+                <!-- 4. 出貨明細單 -->
+                <div id="admin-tab-shipping" class="hidden space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div>
+                            <h4 class="font-bold text-stone-900 text-base">出貨明細與超商門市一覽表</h4>
+                            <p class="text-xs text-stone-500">專為冷凍與現流出貨準備的超商寄件與品項彙整清單。</p>
+                        </div>
+                        <button onclick="window.print()" class="bg-stone-900 text-amber-200 text-xs font-bold px-3 py-1.5 rounded shadow">列印出貨明細單</button>
+                    </div>
+                    <div id="admin-shipping-list" class="space-y-3"></div>
+                </div>
+
+                <!-- 5. 財務與損益 -->
                 <div id="admin-tab-finance" class="hidden space-y-4">
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
-                            <p class="text-xs text-stone-500 font-bold">目前商品總價值/估算營收</p>
+                            <p class="text-xs text-stone-500 font-bold">目前庫存總價值/預估營收</p>
                             <p class="text-xl font-black text-emerald-700 mt-1">NT$ <span id="admin-revenue">0</span></p>
                         </div>
                         <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
@@ -315,12 +345,12 @@
                             <p class="text-xl font-black text-amber-700 mt-1">NT$ <span id="admin-profit">0</span></p>
                         </div>
                     </div>
-                    <button onclick="app.exportCSVReport()" class="w-full bg-stone-900 text-amber-200 font-bold py-3 rounded-xl shadow hover:bg-stone-800 transition">
-                        <i class="fa-solid fa-file-csv mr-2"></i> 匯出 UTF-8 BOM 財務報表 (.csv)
+                    <button onclick="app.exportCSVReport()" class="w-full bg-stone-900 text-amber-200 font-bold py-3 rounded-xl shadow hover:bg-stone-800 transition text-xs">
+                        <i class="fa-solid fa-file-csv mr-2"></i> 匯出 UTF-8 BOM 財務與商品對帳報表 (.csv)
                     </button>
                 </div>
 
-                <!-- 對話紀錄 -->
+                <!-- 6. 對話紀錄備份 -->
                 <div id="admin-tab-chats" class="hidden space-y-4">
                     <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
                         <h4 class="font-bold text-stone-900">對話紀錄與改單備份管理</h4>
@@ -338,10 +368,29 @@
     <script>
         class SeafoodMainApp {
             constructor() {
-                this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbx8y39aVON-O9rHQS1HHpWR8WkYBmhRRLa2X2FlVcxAbms2Ks4ZPjdouDPKzGWMz-s/exec";
+                this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbz7Fgw1-Vpe4Z9vhTujl6F70ib_aTx-JV1pyKm-amqn5pqj96TBghl01mLbcINEo6op/exec";
                 this.isAdmin = true;
                 this.cart = JSON.parse(localStorage.getItem('seafood_cart')) || [];
-                this.orders = JSON.parse(localStorage.getItem('seafood_orders')) || [];
+                this.orders = JSON.parse(localStorage.getItem('seafood_orders')) || [
+                    {
+                        orderId: 'ORD-885612',
+                        createdAt: '2026/11/4 上午 11:30:00',
+                        userEmail: 'test_buyer@gmail.com',
+                        userPhone4: '5678',
+                        recipientName: '王小明',
+                        recipientPhone: '0912345678',
+                        remitAmount: '550',
+                        remitLast5: '98765',
+                        store711: '基隆愛興店',
+                        storeFamily: '未填',
+                        intention: 'A. 直接出貨',
+                        isSettled: false, // 手動確認匯款狀態
+                        items: [{ name: '崁仔頂現流白帶魚(切塊)', price: 210, qty: 2, type: 'fresh' }],
+                        subtotal: 420,
+                        shipping: 130,
+                        grandTotal: 550
+                    }
+                ];
                 this.tempCheckoutData = {};
 
                 this.freshProducts = JSON.parse(localStorage.getItem('seafood_fresh')) || [
@@ -350,10 +399,10 @@
                 ];
 
                 this.frozenProducts = JSON.parse(localStorage.getItem('seafood_frozen')) || [
-                    { id: 'fz1', name: '深海大白鯧 (真空冷凍)', spec: '500g/尾', price: 680, stock: 99 },
-                    { id: 'fz2', name: '日本生食級干貝 3S', spec: '250g/盒', price: 520, stock: 99 },
-                    { id: 'fz3', name: '基隆三記手工魚餃', spec: '10條/盒', price: 120, stock: 99 },
-                    { id: 'fz4', name: '嚴選急凍大草蝦', spec: '300g/包', price: 340, stock: 99 }
+                    { id: 'fz1', name: '深海大白鯧 (真空冷凍)', spec: '500g/尾', price: 680, stock: 99, img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500' },
+                    { id: 'fz2', name: '日本生食級干貝 3S', spec: '250g/盒', price: 520, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' },
+                    { id: 'fz3', name: '基隆三記手工魚餃', spec: '10條/盒', price: 120, stock: 99, img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500' },
+                    { id: 'fz4', name: '嚴選急凍大草蝦', spec: '300g/包', price: 340, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' }
                 ];
 
                 this.init();
@@ -404,6 +453,7 @@
                 if (frozenEl) {
                     frozenEl.innerHTML = this.frozenProducts.map(p => `
                         <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex justify-between items-center gap-2">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500'}" class="w-16 h-16 object-cover rounded-lg" alt="${p.name}">
                             <div class="flex-1">
                                 <h4 class="font-bold text-stone-900 text-sm">${p.name}</h4>
                                 <p class="text-xs text-stone-400">${p.spec} | 庫存 ${p.stock}</p>
@@ -542,7 +592,8 @@
                     recipientPhone: phone,
                     store711: store711 || '未填',
                     storeFamily: storeFamily || '未填',
-                    intention
+                    intention,
+                    isSettled: false // 預設未手動確認匯款，未結單
                 };
 
                 this.orders.unshift(orderData);
@@ -559,7 +610,7 @@
                     console.log('試算表同步發送中', e);
                 }
 
-                alert(`🎉 訂單與匯款回報成功！\n\n訂單編號：${orderData.orderId}\n系統已將完整明細與匯款帳號寄送至：${orderData.userEmail}\n同步發送通知至管理者 twvisa2009@gmail.com`);
+                alert(`🎉 訂單與匯款回報成功！\n\n訂單編號：${orderData.orderId}\n系統已記錄您的匯款末 5 碼（${remitLast5}），管理者確認入帳後將正式結單出貨！`);
 
                 this.cart = [];
                 localStorage.removeItem('seafood_cart');
@@ -571,6 +622,8 @@
                 document.getElementById('admin-modal').classList.remove('hidden');
                 this.renderAdminProductLists();
                 this.renderAdminOrders();
+                this.renderAdminCustomers();
+                this.renderAdminShipping();
                 this.calculateFinanceStats();
             }
 
@@ -579,35 +632,52 @@
             }
 
             switchAdminTab(tabName) {
-                ['products', 'orders', 'finance', 'chats'].forEach(t => {
+                ['products', 'orders', 'customers', 'shipping', 'finance', 'chats'].forEach(t => {
                     document.getElementById(`admin-tab-${t}`).classList.add('hidden');
                     const btn = document.getElementById(`tab-btn-${t}`);
-                    if (btn) btn.className = 'px-4 py-2 rounded-lg bg-white text-stone-700 border';
+                    if (btn) btn.className = 'px-3.5 py-2 rounded-lg bg-white text-stone-700 border whitespace-nowrap';
                 });
                 document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
                 const activeBtn = document.getElementById(`tab-btn-${tabName}`);
-                if (activeBtn) activeBtn.className = 'px-4 py-2 rounded-lg bg-amber-600 text-white';
+                if (activeBtn) activeBtn.className = 'px-3.5 py-2 rounded-lg bg-amber-600 text-white whitespace-nowrap';
             }
 
+            // 📋 訂單系統與手動結單邏輯
             renderAdminOrders() {
                 const container = document.getElementById('admin-orders-list');
                 if (this.orders.length === 0) {
                     container.innerHTML = '<p class="text-stone-400 text-xs text-center py-4">目前尚無下單紀錄</p>';
                     return;
                 }
-                container.innerHTML = this.orders.map(o => `
-                    <div class="bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs space-y-1">
-                        <div class="font-bold text-stone-900 flex justify-between border-b pb-1">
+                container.innerHTML = this.orders.map((o, idx) => `
+                    <div class="bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs space-y-2">
+                        <div class="font-bold text-stone-900 flex justify-between items-center border-b pb-1">
                             <span>📦 ${o.orderId} (${o.createdAt})</span>
-                            <span class="text-rose-600">總額 NT$ ${o.grandTotal}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-white font-bold ${o.isSettled ? 'bg-emerald-600' : 'bg-amber-600'}">
+                                    ${o.isSettled ? '✅ 已手動結單 (已入帳)' : '⏳ 待確認匯款'}
+                                </span>
+                                <button onclick="app.toggleOrderSettled(${idx})" class="px-2.5 py-1 rounded text-white font-bold text-[10px] ${o.isSettled ? 'bg-stone-600 hover:bg-stone-700' : 'bg-emerald-600 hover:bg-emerald-700'} transition">
+                                    ${o.isSettled ? '取消結單' : '✓ 確認匯款並結單'}
+                                </button>
+                            </div>
                         </div>
-                        <p><strong>買家：</strong> ${o.recipientName} (${o.userEmail} / 後4碼:${o.userPhone4})</p>
-                        <p><strong>匯款回報：</strong> 金額 $${o.remitAmount} | 後5碼：${o.remitLast5}</p>
-                        <p><strong>收件門市：</strong> 7-11[${o.store711}] / 全家[${o.storeFamily}]</p>
-                        <p><strong>意向：</strong> ${o.intention}</p>
-                        <p><strong>明細：</strong> ${o.items.map(i => `${i.name}x${i.qty}`).join(', ')}</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-stone-700">
+                            <p><strong>買家：</strong> ${o.recipientName} (${o.userEmail} / 手機後4碼:${o.userPhone4})</p>
+                            <p><strong>匯款回報：</strong> 金額 $${o.remitAmount} | 帳號末5碼：<strong class="text-rose-600">${o.remitLast5}</strong></p>
+                            <p><strong>超商門市：</strong> 7-11[${o.store711}] / 全家[${o.storeFamily}]</p>
+                            <p><strong>買家意向：</strong> ${o.intention}</p>
+                        </div>
+                        <p class="text-stone-600 border-t pt-1"><strong>購買明細：</strong> ${o.items.map(i => `${i.name} x ${i.qty}`).join(', ')} (總額 NT$ ${o.grandTotal})</p>
                     </div>
                 `).join('');
+            }
+
+            toggleOrderSettled(index) {
+                this.orders[index].isSettled = !this.orders[index].isSettled;
+                localStorage.setItem('seafood_orders', JSON.stringify(this.orders));
+                this.renderAdminOrders();
+                this.renderAdminShipping();
             }
 
             clearOrderHistory() {
@@ -615,22 +685,99 @@
                 this.orders = [];
                 localStorage.removeItem('seafood_orders');
                 this.renderAdminOrders();
+                this.renderAdminCustomers();
+                this.renderAdminShipping();
             }
 
+            // 👥 客戶資料管理邏輯
+            renderAdminCustomers() {
+                const container = document.getElementById('admin-customers-list');
+                const customersMap = {};
+                this.orders.forEach(o => {
+                    const key = o.userEmail;
+                    if (!customersMap[key]) {
+                        customersMap[key] = { name: o.recipientName, email: o.userEmail, phone: o.recipientPhone, ordersCount: 0, totalSpent: 0 };
+                    }
+                    customersMap[key].ordersCount += 1;
+                    if (o.isSettled) customersMap[key].totalSpent += Number(o.grandTotal);
+                });
+
+                const list = Object.values(customersMap);
+                if (list.length === 0) {
+                    container.innerHTML = '<p class="text-stone-400 text-xs text-center py-4">目前尚無客戶資料</p>';
+                    return;
+                }
+
+                container.innerHTML = list.map(c => `
+                    <div class="bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs flex justify-between items-center">
+                        <div>
+                            <h5 class="font-bold text-stone-900 text-sm">${c.name}</h5>
+                            <p class="text-stone-500">Email: ${c.email} | 電話: ${c.phone}</p>
+                        </div>
+                        <div class="text-right font-bold">
+                            <p class="text-amber-700">下單次數: ${c.ordersCount} 次</p>
+                            <p class="text-emerald-700">已結單消費: NT$ ${c.totalSpent}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 📦 出貨明細單邏輯 (僅列出已確認匯款結單者)
+            renderAdminShipping() {
+                const container = document.getElementById('admin-shipping-list');
+                const settledOrders = this.orders.filter(o => o.isSettled);
+
+                if (settledOrders.length === 0) {
+                    container.innerHTML = '<p class="text-stone-400 text-xs text-center py-6">目前尚無「已確認匯款結單」的出貨訂單。請先至訂單分頁確認匯款！</p>';
+                    return;
+                }
+
+                container.innerHTML = settledOrders.map(o => `
+                    <div class="bg-white border-2 border-stone-800 rounded-xl p-4 text-xs space-y-2 shadow-sm">
+                        <div class="flex justify-between items-center font-black text-sm border-b pb-1 text-stone-900">
+                            <span>📦 出貨單號: ${o.orderId}</span>
+                            <span>收件人: ${o.recipientName} (${o.recipientPhone})</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-stone-700">
+                            <p><strong>7-11 門市：</strong> ${o.store711}</p>
+                            <p><strong>全家門市：</strong> ${o.storeFamily}</p>
+                            <p><strong>買家意向：</strong> <span class="text-rose-600 font-bold">${o.intention}</span></p>
+                            <p><strong>付款狀態：</strong> <span class="text-emerald-600 font-bold">✓ 已入帳結單</span></p>
+                        </div>
+                        <div class="bg-amber-50 p-2 rounded border border-amber-200">
+                            <strong>品項明細：</strong> ${o.items.map(i => `${i.name} (${i.type === 'fresh' ? '🔥現流' : '❄️冷凍'}) x ${i.qty}`).join(', ')}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 📦 商品上下架管理 (現流與冷凍完全獨立)
             renderAdminProductLists() {
                 const freshContainer = document.getElementById('admin-fresh-list');
                 freshContainer.innerHTML = this.freshProducts.map(p => `
-                    <div class="flex justify-between items-center bg-stone-50 p-2 rounded border text-xs">
-                        <span><strong>${p.name}</strong> (${p.spec}) - NT$ ${p.price} | 庫存: ${p.stock}</span>
-                        <button onclick="app.removeProduct('${p.id}', 'fresh')" class="bg-rose-600 text-white px-2 py-1 rounded hover:bg-rose-700 transition">一鍵下架</button>
+                    <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-rose-200 text-xs shadow-sm">
+                        <div class="flex items-center space-x-2">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500'}" class="w-10 h-10 object-cover rounded">
+                            <div>
+                                <span class="font-bold text-stone-900">${p.name}</span> (${p.spec})<br>
+                                <span class="text-rose-600 font-bold">NT$ ${p.price}</span> | 庫存: <strong class="text-rose-700">${p.stock}</strong>
+                            </div>
+                        </div>
+                        <button onclick="app.removeProduct('${p.id}', 'fresh')" class="bg-rose-600 text-white px-3 py-1.5 rounded-lg hover:bg-rose-700 transition font-bold">一鍵下架</button>
                     </div>
                 `).join('');
 
                 const frozenContainer = document.getElementById('admin-frozen-list');
                 frozenContainer.innerHTML = this.frozenProducts.map(p => `
-                    <div class="flex justify-between items-center bg-stone-50 p-2 rounded border text-xs">
-                        <span><strong>${p.name}</strong> (${p.spec}) - NT$ ${p.price} | 庫存: ${p.stock}</span>
-                        <button onclick="app.removeProduct('${p.id}', 'frozen')" class="bg-rose-600 text-white px-2 py-1 rounded hover:bg-rose-700 transition">一鍵下架</button>
+                    <div class="flex justify-between items-center bg-white p-2.5 rounded-lg border border-blue-200 text-xs shadow-sm">
+                        <div class="flex items-center space-x-2">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500'}" class="w-10 h-10 object-cover rounded">
+                            <div>
+                                <span class="font-bold text-stone-900">${p.name}</span> (${p.spec})<br>
+                                <span class="text-blue-600 font-bold">NT$ ${p.price}</span> | 庫存: <strong class="text-blue-700">${p.stock}</strong>
+                            </div>
+                        </div>
+                        <button onclick="app.removeProduct('${p.id}', 'frozen')" class="bg-rose-600 text-white px-3 py-1.5 rounded-lg hover:bg-rose-700 transition font-bold">一鍵下架</button>
                     </div>
                 `).join('');
             }
@@ -641,6 +788,7 @@
                 const price = Number(document.getElementById('new-p-price').value);
                 const stock = Number(document.getElementById('new-p-stock').value) || 99;
                 const type = document.getElementById('new-p-type').value;
+                const img = document.getElementById('new-p-img').value.trim();
 
                 if (!name || !price) return alert('請填寫完整商品名稱與售價金額！');
 
@@ -649,11 +797,11 @@
                     name,
                     spec: spec || '固定規格',
                     price,
-                    stock
+                    stock,
+                    img: img || (type === 'fresh' ? 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' : 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500')
                 };
 
                 if (type === 'fresh') {
-                    newObj.img = 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500';
                     this.freshProducts.push(newObj);
                     localStorage.setItem('seafood_fresh', JSON.stringify(this.freshProducts));
                 } else {
@@ -666,6 +814,7 @@
                 document.getElementById('new-p-spec').value = '';
                 document.getElementById('new-p-price').value = '';
                 document.getElementById('new-p-stock').value = '';
+                document.getElementById('new-p-img').value = '';
                 
                 this.renderProducts();
                 this.renderAdminProductLists();
