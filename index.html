@@ -6,27 +6,29 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>基隆鮮物．崁仔頂小商人 khàm-tíng | [對外封閉測試版]</title>
+    <title>基隆鮮物．崁仔頂小商人 khàm-tíng | 官方主頁</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @keyframes stockBump {
+        /* 💥 庫存數字 3 倍放大、強烈發光與跳出特效 */
+        @keyframes stockBump3X {
             0% { transform: scale(1); }
-            50% { transform: scale(1.8); color: #ef4444; text-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+            30% { transform: scale(3.0); color: #dc2626; text-shadow: 0 0 20px rgba(220, 38, 38, 0.9), 0 0 35px rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(3.0); color: #dc2626; text-shadow: 0 0 20px rgba(220, 38, 38, 0.9), 0 0 35px rgba(239, 68, 68, 0.7); }
             100% { transform: scale(1); }
         }
         .stock-bump-active {
-            animation: stockBump 0.6s ease-in-out;
+            animation: stockBump3X 0.7s ease-in-out;
             display: inline-block;
         }
     </style>
 </head>
 <body class="bg-amber-50/60 text-stone-800 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- Navbar (純買家介面) -->
-    <nav class="bg-stone-900 text-stone-100 py-4 px-4 sm:px-8 shadow-xl border-b border-amber-600/35 sticky top-0 z-50">
+    <!-- Navbar -->
+    <nav class="bg-stone-900 text-stone-100 py-4 px-4 sm:px-8 shadow-xl border-b border-amber-600/30 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center text-stone-900 font-black text-xl shadow-inner">
@@ -34,7 +36,7 @@
                 </div>
                 <div>
                     <h1 class="text-lg sm:text-xl font-bold tracking-wide text-amber-100">基隆鮮物．崁仔頂小商人</h1>
-                    <p class="text-xs text-amber-400/80">每日現流野生海鮮 ✕ 極速冷凍鮮貨專賣 <span class="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded text-[10px] ml-1">對外封閉測試版</span></p>
+                    <p class="text-xs text-amber-400/80">每日現流野生海鮮 ✕ 極速冷凍鮮貨專賣</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -116,7 +118,7 @@
 
     <footer class="bg-stone-900 text-stone-400 text-xs py-6 text-center border-t border-stone-800 space-y-2">
         <p>© 2026 基隆鮮物．崁仔頂小商人 khàm-tíng. All Rights Reserved.</p>
-        <p class="text-stone-500">封閉測試體驗版 | 下單數據將自動同步至對帳系統</p>
+        <p class="text-stone-500">官方正式版 | 資料自動同步備份至 Google 試算表</p>
     </footer>
 
     <!-- 🛒 購物車與下單結帳互動 Modal -->
@@ -229,10 +231,10 @@
 
     <!-- JS 邏輯 -->
     <script>
-        class SeafoodBetaApp {
+        class SeafoodApp {
             constructor() {
                 this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbx8y39aVON-O9rHQS1HHpWR8WkYBmhRRLa2X2FlVcxAbms2Ks4ZPjdouDPKzGWMz-s/exec";
-                this.cart = JSON.parse(localStorage.getItem('seafood_beta_cart')) || [];
+                this.cart = JSON.parse(localStorage.getItem('seafood_cart')) || [];
                 this.tempCheckoutData = {};
 
                 this.freshProducts = [
@@ -318,6 +320,16 @@
                 const qty = parseInt(document.getElementById(`select-qty-${id}`).value, 10);
                 if (!p || p.stock < qty) return alert(`庫存不足！`);
                 p.stock -= qty;
+                
+                // 💥 觸發 3 倍放大、發光與數量跳動特效
+                const stockEl = document.getElementById(`stock-${id}`);
+                if (stockEl) {
+                    stockEl.innerText = p.stock;
+                    stockEl.classList.remove('stock-bump-active');
+                    void stockEl.offsetWidth; // 強制重置動畫
+                    stockEl.classList.add('stock-bump-active');
+                }
+
                 this.addToCartWithQty(id, 'fresh', qty, p);
             }
 
@@ -331,9 +343,8 @@
                 const exist = this.cart.find(item => item.id === id);
                 if (exist) exist.qty += qty;
                 else this.cart.push({ id: p.id, name: p.name, price: p.price, qty: qty, type });
-                localStorage.setItem('seafood_beta_cart', JSON.stringify(this.cart));
+                localStorage.setItem('seafood_cart', JSON.stringify(this.cart));
                 this.updateCartBadge();
-                alert(`成功加入購物車：${p.name} x ${qty}`);
             }
 
             updateCartBadge() {
@@ -403,7 +414,7 @@
                 }
 
                 const orderData = {
-                    orderId: 'ORD-BETA-' + Date.now().toString().slice(-6),
+                    orderId: 'ORD-' + Date.now().toString().slice(-6),
                     createdAt: new Date().toLocaleString(),
                     userEmail: this.tempCheckoutData.email,
                     userPhone4: this.tempCheckoutData.phone4,
@@ -435,7 +446,7 @@
                 alert(`🎉 訂單與匯款回報成功！\n\n訂單編號：${orderData.orderId}\n系統已將完整明細與匯款帳號寄送至：${orderData.userEmail}\n同步發送通知至管理者 twvisa2009@gmail.com`);
 
                 this.cart = [];
-                localStorage.removeItem('seafood_beta_cart');
+                localStorage.removeItem('seafood_cart');
                 this.updateCartBadge();
                 document.getElementById('remittance-modal').classList.add('hidden');
             }
@@ -447,7 +458,7 @@
 
         let app;
         document.addEventListener('DOMContentLoaded', () => {
-            app = new SeafoodBetaApp();
+            app = new SeafoodApp();
         });
     </script>
 </body>

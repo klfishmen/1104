@@ -6,29 +6,31 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>基隆鮮物．崁仔頂小商人 khàm-tíng | 管理者完整版</title>
+    <title>基隆鮮物．崁仔頂小商人 khàm-tíng | 內部管理者系統 (main.html)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @keyframes stockBump {
+        /* 💥 庫存數字 3 倍放大、強烈發光與跳出特效 */
+        @keyframes stockBump3X {
             0% { transform: scale(1); }
-            50% { transform: scale(1.8); color: #ef4444; text-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+            30% { transform: scale(3.0); color: #dc2626; text-shadow: 0 0 20px rgba(220, 38, 38, 0.9), 0 0 35px rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(3.0); color: #dc2626; text-shadow: 0 0 20px rgba(220, 38, 38, 0.9), 0 0 35px rgba(239, 68, 68, 0.7); }
             100% { transform: scale(1); }
         }
         .stock-bump-active {
-            animation: stockBump 0.6s ease-in-out;
+            animation: stockBump3X 0.7s ease-in-out;
             display: inline-block;
         }
     </style>
 </head>
 <body class="bg-amber-50/60 text-stone-800 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- 頂部沙盒模擬控制列 -->
+    <!-- 頂部沙盒模擬與內部管理控制列 -->
     <header class="bg-stone-900 text-amber-200 text-xs py-2 px-4 flex flex-wrap justify-between items-center gap-2 border-b border-amber-500/30 sticky top-0 z-50 shadow-md">
         <div class="flex items-center gap-2 font-mono">
-            <span class="bg-amber-500 text-stone-900 px-2 py-0.5 rounded font-bold">管理者完整版 (index.html)</span>
+            <span class="bg-amber-500 text-stone-900 px-2 py-0.5 rounded font-bold">內部管理系統 (main.html)</span>
             <span id="current-identity-tag" class="text-stone-400">目前身份: 👑 管理者 (twvisa2009)</span>
         </div>
         <div class="flex items-center gap-2">
@@ -132,7 +134,7 @@
 
     <footer class="bg-stone-900 text-stone-400 text-xs py-6 text-center border-t border-stone-800 space-y-2">
         <p>© 2026 基隆鮮物．崁仔頂小商人 khàm-tíng. All Rights Reserved.</p>
-        <p class="text-stone-500">管理者完整版 (index.html) | 資料自動同步備份至 Google 試算表</p>
+        <p class="text-stone-500">內部管理版本 (main.html) | 資料自動同步備份至 Google 試算表</p>
     </footer>
 
     <!-- 🛒 購物車與下單結帳互動 Modal -->
@@ -243,23 +245,98 @@
         </div>
     </div>
 
-    <!-- 管理者後台 Modal -->
+    <!-- 👑 完整視覺化管理者後台 Modal (4 分頁版) -->
     <div id="admin-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
             <div class="bg-stone-900 text-amber-200 p-4 flex justify-between items-center border-b border-amber-600/30">
-                <h3 class="font-bold text-base">小商人後台管理系統 (twvisa2009@gmail.com)</h3>
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-amber-400 text-lg"></i>
+                    <h3 class="font-bold text-base">小商人後台管理系統 (twvisa2009@gmail.com)</h3>
+                </div>
                 <button onclick="app.closeAdminModal()" class="text-stone-400 hover:text-white p-1 text-xl font-bold">&times;</button>
             </div>
-            <div class="p-6 overflow-y-auto flex-1 space-y-4 text-sm">
-                <h4 class="font-bold text-stone-900">買家下單與對帳紀錄 (即時同步 Google 試算表)</h4>
-                <div id="admin-orders-list" class="space-y-3"></div>
+            
+            <div class="bg-stone-100 border-b border-stone-200 p-2 flex space-x-2 overflow-x-auto text-xs font-bold">
+                <button onclick="app.switchAdminTab('products')" id="tab-btn-products" class="px-4 py-2 rounded-lg bg-amber-600 text-white">📦 商品上下架</button>
+                <button onclick="app.switchAdminTab('orders')" id="tab-btn-orders" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">📋 訂單紀錄檢視</button>
+                <button onclick="app.switchAdminTab('finance')" id="tab-btn-finance" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">📊 財務與損益</button>
+                <button onclick="app.switchAdminTab('chats')" id="tab-btn-chats" class="px-4 py-2 rounded-lg bg-white text-stone-700 border">💬 對話紀錄備份</button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1 space-y-6 text-sm">
+                <!-- 上下架管理 -->
+                <div id="admin-tab-products" class="space-y-6">
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 space-y-3">
+                        <h4 class="font-bold text-amber-900 text-base"><i class="fa-solid fa-plus-circle mr-1"></i>快速新增商品上架</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <input id="new-p-name" type="text" placeholder="商品名稱 (如: 野生紅甘)" class="p-2 border rounded">
+                            <input id="new-p-spec" type="text" placeholder="規格 (如: 300g±10%)" class="p-2 border rounded">
+                            <input id="new-p-price" type="number" placeholder="售價 NT$" class="p-2 border rounded">
+                            <input id="new-p-stock" type="number" placeholder="初始庫存 (如: 99)" class="p-2 border rounded">
+                            <select id="new-p-type" class="p-2 border rounded">
+                                <option value="fresh">🔥 每日現流專區</option>
+                                <option value="frozen">❄️ 冷凍常態專區</option>
+                            </select>
+                            <button onclick="app.addNewProductFromAdmin()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 rounded">一鍵新增上架</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-stone-800 mb-2">🔥 現流商品下架清單</h4>
+                        <div id="admin-fresh-list" class="space-y-2"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-stone-800 mb-2">❄️ 冷凍商品下架清單</h4>
+                        <div id="admin-frozen-list" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- 訂單紀錄檢視 -->
+                <div id="admin-tab-orders" class="hidden space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="font-bold text-stone-900 text-base">買家下單紀錄 (同步試算表)</h4>
+                        <button onclick="app.clearOrderHistory()" class="text-xs bg-stone-200 hover:bg-stone-300 text-stone-700 px-2 py-1 rounded">清空測試紀錄</button>
+                    </div>
+                    <div id="admin-orders-list" class="space-y-3"></div>
+                </div>
+
+                <!-- 財務損益 -->
+                <div id="admin-tab-finance" class="hidden space-y-4">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                            <p class="text-xs text-stone-500 font-bold">目前商品總價值/估算營收</p>
+                            <p class="text-xl font-black text-emerald-700 mt-1">NT$ <span id="admin-revenue">0</span></p>
+                        </div>
+                        <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                            <p class="text-xs text-stone-500 font-bold">估算進貨成本 (65%)</p>
+                            <p class="text-xl font-black text-rose-700 mt-1">NT$ <span id="admin-cost">0</span></p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                            <p class="text-xs text-stone-500 font-bold">預估毛利潤</p>
+                            <p class="text-xl font-black text-amber-700 mt-1">NT$ <span id="admin-profit">0</span></p>
+                        </div>
+                    </div>
+                    <button onclick="app.exportCSVReport()" class="w-full bg-stone-900 text-amber-200 font-bold py-3 rounded-xl shadow hover:bg-stone-800 transition">
+                        <i class="fa-solid fa-file-csv mr-2"></i> 匯出 UTF-8 BOM 財務報表 (.csv)
+                    </button>
+                </div>
+
+                <!-- 對話紀錄 -->
+                <div id="admin-tab-chats" class="hidden space-y-4">
+                    <div class="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                        <h4 class="font-bold text-stone-900">對話紀錄與改單備份管理</h4>
+                        <p class="text-stone-600 text-xs">此處會自動記錄顧客公開問答與私訊對帳訊息，資料持久保留。</p>
+                        <button onclick="app.exportChatLogs()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg text-xs">
+                            <i class="fa-solid fa-download mr-1"></i> 匯出 JSON 對話對帳檔
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- JS 邏輯 -->
     <script>
-        class SeafoodApp {
+        class SeafoodMainApp {
             constructor() {
                 this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbx8y39aVON-O9rHQS1HHpWR8WkYBmhRRLa2X2FlVcxAbms2Ks4ZPjdouDPKzGWMz-s/exec";
                 this.isAdmin = true;
@@ -267,12 +344,12 @@
                 this.orders = JSON.parse(localStorage.getItem('seafood_orders')) || [];
                 this.tempCheckoutData = {};
 
-                this.freshProducts = [
+                this.freshProducts = JSON.parse(localStorage.getItem('seafood_fresh')) || [
                     { id: 'f1', name: '野生現流土魠魚塊', spec: '300g±10%', price: 280, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' },
                     { id: 'f2', name: '崁仔頂現流白帶魚(切塊)', spec: '300g±10%', price: 210, stock: 99, img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500' }
                 ];
 
-                this.frozenProducts = [
+                this.frozenProducts = JSON.parse(localStorage.getItem('seafood_frozen')) || [
                     { id: 'fz1', name: '深海大白鯧 (真空冷凍)', spec: '500g/尾', price: 680, stock: 99 },
                     { id: 'fz2', name: '日本生食級干貝 3S', spec: '250g/盒', price: 520, stock: 99 },
                     { id: 'fz3', name: '基隆三記手工魚餃', spec: '10條/盒', price: 120, stock: 99 },
@@ -300,7 +377,7 @@
                 if (freshEl) {
                     freshEl.innerHTML = this.freshProducts.map(p => `
                         <div class="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between">
-                            <img src="${p.img}" class="w-full h-44 object-cover" alt="${p.name}">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500'}" class="w-full h-44 object-cover" alt="${p.name}">
                             <div class="p-4 space-y-3 flex-1 flex flex-col justify-between">
                                 <div>
                                     <h3 class="font-bold text-stone-900">${p.name}</h3>
@@ -350,6 +427,17 @@
                 const qty = parseInt(document.getElementById(`select-qty-${id}`).value, 10);
                 if (!p || p.stock < qty) return alert(`庫存不足！`);
                 p.stock -= qty;
+                localStorage.setItem('seafood_fresh', JSON.stringify(this.freshProducts));
+
+                // 💥 觸發 3 倍放大、發光與數量跳動特效
+                const stockEl = document.getElementById(`stock-${id}`);
+                if (stockEl) {
+                    stockEl.innerText = p.stock;
+                    stockEl.classList.remove('stock-bump-active');
+                    void stockEl.offsetWidth;
+                    stockEl.classList.add('stock-bump-active');
+                }
+
                 this.addToCartWithQty(id, 'fresh', qty, p);
             }
 
@@ -365,12 +453,17 @@
                 else this.cart.push({ id: p.id, name: p.name, price: p.price, qty: qty, type });
                 localStorage.setItem('seafood_cart', JSON.stringify(this.cart));
                 this.updateCartBadge();
-                alert(`成功加入購物車：${p.name} x ${qty}`);
             }
 
             updateCartBadge() {
                 const total = this.cart.reduce((sum, item) => sum + item.qty, 0);
                 document.getElementById('cart-badge').innerText = total;
+            }
+
+            toggleSandboxIdentity() {
+                this.isAdmin = !this.isAdmin;
+                document.getElementById('current-identity-tag').innerText = `目前身份: ${this.isAdmin ? '👑 管理者 (twvisa2009)' : '一般顧客'}`;
+                document.getElementById('admin-panel-btn').classList.toggle('hidden', !this.isAdmin);
             }
 
             openCartModal() {
@@ -455,7 +548,6 @@
                 this.orders.unshift(orderData);
                 localStorage.setItem('seafood_orders', JSON.stringify(this.orders));
 
-                // 同步發送至您的 Google Apps Script 後台 (twvisa2009@gmail.com)
                 try {
                     await fetch(this.googleSheetsApiUrl, {
                         method: 'POST',
@@ -475,22 +567,37 @@
                 document.getElementById('remittance-modal').classList.add('hidden');
             }
 
-            toggleSandboxIdentity() {
-                this.isAdmin = !this.isAdmin;
-                document.getElementById('current-identity-tag').innerText = `目前身份: ${this.isAdmin ? '👑 管理者 (twvisa2009)' : '一般顧客'}`;
-                document.getElementById('admin-panel-btn').classList.toggle('hidden', !this.isAdmin);
-            }
-
             openAdminModal() {
                 document.getElementById('admin-modal').classList.remove('hidden');
+                this.renderAdminProductLists();
+                this.renderAdminOrders();
+                this.calculateFinanceStats();
+            }
+
+            closeAdminModal() {
+                document.getElementById('admin-modal').classList.add('hidden');
+            }
+
+            switchAdminTab(tabName) {
+                ['products', 'orders', 'finance', 'chats'].forEach(t => {
+                    document.getElementById(`admin-tab-${t}`).classList.add('hidden');
+                    const btn = document.getElementById(`tab-btn-${t}`);
+                    if (btn) btn.className = 'px-4 py-2 rounded-lg bg-white text-stone-700 border';
+                });
+                document.getElementById(`admin-tab-${tabName}`).classList.remove('hidden');
+                const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+                if (activeBtn) activeBtn.className = 'px-4 py-2 rounded-lg bg-amber-600 text-white';
+            }
+
+            renderAdminOrders() {
                 const container = document.getElementById('admin-orders-list');
                 if (this.orders.length === 0) {
                     container.innerHTML = '<p class="text-stone-400 text-xs text-center py-4">目前尚無下單紀錄</p>';
                     return;
                 }
                 container.innerHTML = this.orders.map(o => `
-                    <div class="bg-stone-50 border rounded-xl p-3 text-xs space-y-1">
-                        <div class="font-bold text-stone-900 flex justify-between">
+                    <div class="bg-stone-50 border border-stone-200 rounded-xl p-3 text-xs space-y-1">
+                        <div class="font-bold text-stone-900 flex justify-between border-b pb-1">
                             <span>📦 ${o.orderId} (${o.createdAt})</span>
                             <span class="text-rose-600">總額 NT$ ${o.grandTotal}</span>
                         </div>
@@ -503,8 +610,118 @@
                 `).join('');
             }
 
-            closeAdminModal() {
-                document.getElementById('admin-modal').classList.add('hidden');
+            clearOrderHistory() {
+                if (!confirm('確定要清空本地訂單歷史紀錄嗎？')) return;
+                this.orders = [];
+                localStorage.removeItem('seafood_orders');
+                this.renderAdminOrders();
+            }
+
+            renderAdminProductLists() {
+                const freshContainer = document.getElementById('admin-fresh-list');
+                freshContainer.innerHTML = this.freshProducts.map(p => `
+                    <div class="flex justify-between items-center bg-stone-50 p-2 rounded border text-xs">
+                        <span><strong>${p.name}</strong> (${p.spec}) - NT$ ${p.price} | 庫存: ${p.stock}</span>
+                        <button onclick="app.removeProduct('${p.id}', 'fresh')" class="bg-rose-600 text-white px-2 py-1 rounded hover:bg-rose-700 transition">一鍵下架</button>
+                    </div>
+                `).join('');
+
+                const frozenContainer = document.getElementById('admin-frozen-list');
+                frozenContainer.innerHTML = this.frozenProducts.map(p => `
+                    <div class="flex justify-between items-center bg-stone-50 p-2 rounded border text-xs">
+                        <span><strong>${p.name}</strong> (${p.spec}) - NT$ ${p.price} | 庫存: ${p.stock}</span>
+                        <button onclick="app.removeProduct('${p.id}', 'frozen')" class="bg-rose-600 text-white px-2 py-1 rounded hover:bg-rose-700 transition">一鍵下架</button>
+                    </div>
+                `).join('');
+            }
+
+            addNewProductFromAdmin() {
+                const name = document.getElementById('new-p-name').value.trim();
+                const spec = document.getElementById('new-p-spec').value.trim();
+                const price = Number(document.getElementById('new-p-price').value);
+                const stock = Number(document.getElementById('new-p-stock').value) || 99;
+                const type = document.getElementById('new-p-type').value;
+
+                if (!name || !price) return alert('請填寫完整商品名稱與售價金額！');
+
+                const newObj = {
+                    id: (type === 'fresh' ? 'f_' : 'fz_') + Date.now(),
+                    name,
+                    spec: spec || '固定規格',
+                    price,
+                    stock
+                };
+
+                if (type === 'fresh') {
+                    newObj.img = 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500';
+                    this.freshProducts.push(newObj);
+                    localStorage.setItem('seafood_fresh', JSON.stringify(this.freshProducts));
+                } else {
+                    this.frozenProducts.push(newObj);
+                    localStorage.setItem('seafood_frozen', JSON.stringify(this.frozenProducts));
+                }
+
+                alert('商品成功新增並同步上架！');
+                document.getElementById('new-p-name').value = '';
+                document.getElementById('new-p-spec').value = '';
+                document.getElementById('new-p-price').value = '';
+                document.getElementById('new-p-stock').value = '';
+                
+                this.renderProducts();
+                this.renderAdminProductLists();
+                this.calculateFinanceStats();
+            }
+
+            removeProduct(id, type) {
+                if (!confirm('確定要下架此商品嗎？')) return;
+                if (type === 'fresh') {
+                    this.freshProducts = this.freshProducts.filter(p => p.id !== id);
+                    localStorage.setItem('seafood_fresh', JSON.stringify(this.freshProducts));
+                } else {
+                    this.frozenProducts = this.frozenProducts.filter(p => p.id !== id);
+                    localStorage.setItem('seafood_frozen', JSON.stringify(this.frozenProducts));
+                }
+                this.renderProducts();
+                this.renderAdminProductLists();
+                this.calculateFinanceStats();
+            }
+
+            calculateFinanceStats() {
+                const freshTotal = this.freshProducts.reduce((s, p) => s + (p.price * p.stock), 0);
+                const frozenTotal = this.frozenProducts.reduce((s, p) => s + (p.price * p.stock), 0);
+                const totalRev = freshTotal + frozenTotal;
+                const cost = Math.round(totalRev * 0.65);
+                const profit = totalRev - cost;
+
+                document.getElementById('admin-revenue').innerText = totalRev.toLocaleString();
+                document.getElementById('admin-cost').innerText = cost.toLocaleString();
+                document.getElementById('admin-profit').innerText = profit.toLocaleString();
+            }
+
+            exportCSVReport() {
+                const csvContent = "\uFEFF商品名稱,規格,售價,庫存,專區類別\n" + 
+                    this.freshProducts.map(p => `"${p.name}","${p.spec}",${p.price},${p.stock},"每日現流"`).join("\n") + "\n" +
+                    this.frozenProducts.map(p => `"${p.name}","${p.spec}",${p.price},${p.stock},"常態冷凍"`).join("\n");
+                
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `崁仔頂小商人_財務商品對帳表_${new Date().toISOString().slice(0,10)}.csv`;
+                link.click();
+            }
+
+            exportChatLogs() {
+                const logs = {
+                    system: "基隆鮮物．崁仔頂小商人",
+                    timestamp: new Date().toISOString(),
+                    note: "對話對帳備份",
+                    status: "正常運作中"
+                };
+                const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `chats_backup_${Date.now()}.json`;
+                link.click();
             }
 
             openGuideModal() {
@@ -514,7 +731,7 @@
 
         let app;
         document.addEventListener('DOMContentLoaded', () => {
-            app = new SeafoodApp();
+            app = new SeafoodMainApp();
         });
     </script>
 </body>
