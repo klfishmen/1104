@@ -70,7 +70,7 @@
                 <div class="space-y-4">
                     <div class="flex justify-between items-end border-b-2 border-rose-600 pb-2">
                         <div>
-                            <span class="bg-rose-600 text-white text-xs font-bold px-2 py-0.5 rounded-sm">每日 12:00 開放</span>
+                            <span class="bg-rose-600 text-white text-xs font-bold px-2 py-0.5 rounded-sm">隨時開放測試中</span>
                             <h2 class="text-xl font-black text-stone-900 mt-1"><i class="fa-solid fa-fire text-rose-600 mr-2"></i>每日現流限量搶購區</h2>
                         </div>
                         <span class="text-xs text-stone-500">庫存即時連動中</span>
@@ -121,110 +121,38 @@
         <p class="text-stone-500">官方正式版 | 資料自動同步備份至 Google 試算表</p>
     </footer>
 
-    <!-- 🛒 購物車與下單結帳互動 Modal -->
+    <!-- 🛒 購物車與極速無摩擦力下單 Modal (僅需 Email 與手機後 4 碼) -->
     <div id="cart-checkout-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl p-6 space-y-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-stone-900"><i class="fa-solid fa-basket-shopping text-rose-600 mr-2"></i>確認您的購物車與填寫聯絡資訊</h3>
+                <h3 class="text-base font-black text-stone-900"><i class="fa-solid fa-basket-shopping text-rose-600 mr-2"></i>確認購物車與極速下單</h3>
                 <button onclick="app.closeCartModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
             </div>
             
             <div id="cart-items-summary" class="space-y-2 bg-stone-50 p-3 rounded-xl border text-xs"></div>
 
             <div class="space-y-3 pt-2 border-t text-xs">
-                <h4 class="font-bold text-stone-900 text-sm">請填寫下單聯絡資料 (無需登入)</h4>
+                <h4 class="font-bold text-stone-900 text-sm">請輸入您的聯絡驗證資訊</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-bold text-stone-700 mb-1">1. 電子郵件 (Email) *</label>
+                        <label class="block font-bold text-stone-700 mb-1">電子郵件 (Email) * <span class="text-rose-600 font-normal">(自動接收匯款信)</span></label>
                         <input id="checkout-email" type="email" placeholder="example@gmail.com" class="w-full p-2 border rounded-lg">
                     </div>
                     <div>
-                        <label class="block font-bold text-stone-700 mb-1">2. 手機號碼後四碼 *</label>
+                        <label class="block font-bold text-stone-700 mb-1">手機號碼後四碼 *</label>
                         <input id="checkout-phone4" type="text" maxlength="4" placeholder="例如: 1234" class="w-full p-2 border rounded-lg">
                     </div>
                 </div>
             </div>
 
-            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-1">
-                <p class="font-bold"><i class="fa-solid fa-circle-info mr-1"></i>匯款帳號資訊：</p>
-                <p>中國信託 (822) 帳號：<strong>********4005</strong>（完整帳號將於下單確認信中顯示）</p>
+            <div class="bg-blue-50 p-3 rounded-xl border border-blue-200 text-xs text-blue-950 space-y-1">
+                <p class="font-bold"><i class="fa-solid fa-circle-info mr-1"></i>極速下單說明：</p>
+                <p>點擊確認送出後，系統會立刻將訂單成立並返回首頁，絕不卡畫面！同時自動寄送含有中國信託匯款帳號的信件給您，請您轉帳後直接回信告知「收件姓名、手機、超商門市、出貨意向與匯款後 5 碼」即可完成對帳！</p>
             </div>
 
             <div class="flex justify-end space-x-2 pt-2">
                 <button onclick="app.closeCartModal()" class="px-4 py-2 bg-stone-200 hover:bg-stone-300 font-bold rounded-lg text-xs">返回繼續選購</button>
-                <button onclick="app.proceedToRemittanceModal()" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs">確認下單並填寫匯款回報</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 💳 匯款與收件門市回報 Modal -->
-    <div id="remittance-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-stone-900"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i>填寫匯款資料與收件超商門市</h3>
-                <button onclick="app.closeRemittanceModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
-            </div>
-
-            <div class="space-y-3 text-xs">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-bold text-stone-700 mb-1">1. 匯款金額 (NT$) *</label>
-                        <input id="remit-amount" type="number" placeholder="請輸入轉帳總金額" class="w-full p-2 border rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-stone-700 mb-1">2. 帳號後五碼 *</label>
-                        <input id="remit-last5" type="text" maxlength="5" placeholder="轉帳帳號後 5 碼" class="w-full p-2 border rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-stone-700 mb-1">3. 收件人姓名 *</label>
-                        <input id="recipient-name" type="text" placeholder="真實姓名" class="w-full p-2 border rounded-lg">
-                    </div>
-                    <div>
-                        <label class="block font-bold text-stone-700 mb-1">4. 收件人手機 *</label>
-                        <input id="recipient-phone" type="text" placeholder="09xxxxxxxx" class="w-full p-2 border rounded-lg">
-                    </div>
-                </div>
-
-                <div class="border-t pt-3 space-y-3">
-                    <h4 class="font-bold text-stone-900 text-sm">收件門市選擇（建議填寫兩家避免冷凍品拒收）</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block font-bold text-stone-700 mb-1"><i class="fa-solid fa-store text-red-600 mr-1"></i>7-ELEVEN 門市 (店名/店號)</label>
-                            <input id="store-711" type="text" placeholder="例如: 基隆愛興店" class="w-full p-2 border rounded-lg">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-stone-700 mb-1"><i class="fa-solid fa-store text-blue-600 mr-1"></i>全家便利商店 門市 (店名/店號)</label>
-                            <input id="store-family" type="text" placeholder="例如: 基隆旺信店" class="w-full p-2 border rounded-lg">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t pt-3 space-y-2">
-                    <h4 class="font-bold text-stone-900 text-sm">本次訂單後續意向</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-bold">
-                        <label class="flex items-center space-x-2 p-2.5 bg-stone-50 rounded-lg border cursor-pointer hover:bg-amber-50">
-                            <input type="radio" name="order-intention" value="A. 直接出貨" checked class="text-rose-600">
-                            <span>A. 直接出貨</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2.5 bg-stone-50 rounded-lg border cursor-pointer hover:bg-amber-50">
-                            <input type="radio" name="order-intention" value="B. 看看本週還有什麼" class="text-rose-600">
-                            <span>B. 看看本週還有什麼</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2.5 bg-stone-50 rounded-lg border cursor-pointer hover:bg-amber-50">
-                            <input type="radio" name="order-intention" value="C. 我還有冷凍商品" class="text-rose-600">
-                            <span>C. 我還有冷凍商品</span>
-                        </label>
-                        <label class="flex items-center space-x-2 p-2.5 bg-stone-50 rounded-lg border cursor-pointer hover:bg-amber-50">
-                            <input type="radio" name="order-intention" value="D. 其他" class="text-rose-600">
-                            <span>D. 其他</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-2 pt-2">
-                <button onclick="app.closeRemittanceModal()" class="px-4 py-2 bg-stone-200 hover:bg-stone-300 font-bold rounded-lg text-xs">上一步</button>
-                <button onclick="app.submitFinalOrder()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg text-xs shadow-lg">送出訂單與匯款回報</button>
+                <button onclick="app.submitDirectOrder()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg text-xs shadow-lg">確認送出訂單 (返回首頁)</button>
             </div>
         </div>
     </div>
@@ -233,9 +161,8 @@
     <script>
         class SeafoodApp {
             constructor() {
-                this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbx8y39aVON-O9rHQS1HHpWR8WkYBmhRRLa2X2FlVcxAbms2Ks4ZPjdouDPKzGWMz-s/exec";
+                this.googleSheetsApiUrl = "https://script.google.com/macros/s/AKfycbz7Fgw1-Vpe4Z9vhTujl6F70ib_aTx-JV1pyKm-amqn5pqj96TBghl01mLbcINEo6op/exec";
                 this.cart = JSON.parse(localStorage.getItem('seafood_cart')) || [];
-                this.tempCheckoutData = {};
 
                 this.freshProducts = [
                     { id: 'f1', name: '野生現流土魠魚塊', spec: '300g±10%', price: 280, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' },
@@ -243,10 +170,10 @@
                 ];
 
                 this.frozenProducts = [
-                    { id: 'fz1', name: '深海大白鯧 (真空冷凍)', spec: '500g/尾', price: 680, stock: 99 },
-                    { id: 'fz2', name: '日本生食級干貝 3S', spec: '250g/盒', price: 520, stock: 99 },
-                    { id: 'fz3', name: '基隆三記手工魚餃', spec: '10條/盒', price: 120, stock: 99 },
-                    { id: 'fz4', name: '嚴選急凍大草蝦', spec: '300g/包', price: 340, stock: 99 }
+                    { id: 'fz1', name: '深海大白鯧 (真空冷凍)', spec: '500g/尾', price: 680, stock: 99, img: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500' },
+                    { id: 'fz2', name: '日本生食級干貝 3S', spec: '250g/盒', price: 520, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' },
+                    { id: 'fz3', name: '基隆三記手工魚餃', spec: '10條/盒', price: 120, stock: 99, img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500' },
+                    { id: 'fz4', name: '嚴選急凍大草蝦', spec: '300g/包', price: 340, stock: 99, img: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500' }
                 ];
 
                 this.init();
@@ -297,6 +224,7 @@
                 if (frozenEl) {
                     frozenEl.innerHTML = this.frozenProducts.map(p => `
                         <div class="bg-white p-3 rounded-xl border border-stone-200 shadow-sm flex justify-between items-center gap-2">
+                            <img src="${p.img}" class="w-16 h-16 object-cover rounded-lg" alt="${p.name}">
                             <div class="flex-1">
                                 <h4 class="font-bold text-stone-900 text-sm">${p.name}</h4>
                                 <p class="text-xs text-stone-400">${p.spec} | 庫存 ${p.stock}</p>
@@ -321,12 +249,11 @@
                 if (!p || p.stock < qty) return alert(`庫存不足！`);
                 p.stock -= qty;
                 
-                // 💥 觸發 3 倍放大、發光與數量跳動特效
                 const stockEl = document.getElementById(`stock-${id}`);
                 if (stockEl) {
                     stockEl.innerText = p.stock;
                     stockEl.classList.remove('stock-bump-active');
-                    void stockEl.offsetWidth; // 強制重置動畫
+                    void stockEl.offsetWidth;
                     stockEl.classList.add('stock-bump-active');
                 }
 
@@ -371,7 +298,7 @@
                 document.getElementById('cart-checkout-modal').classList.add('hidden');
             }
 
-            proceedToRemittanceModal() {
+            async submitDirectOrder() {
                 const email = document.getElementById('checkout-email').value.trim();
                 const phone4 = document.getElementById('checkout-phone4').value.trim();
 
@@ -380,56 +307,30 @@
 
                 const subtotal = this.cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
                 let shipping = subtotal >= 3000 ? 0 : (subtotal >= 2000 ? 60 : 130);
-
-                this.tempCheckoutData = {
-                    email,
-                    phone4,
-                    subtotal,
-                    shipping,
-                    grandTotal: subtotal + shipping,
-                    items: [...this.cart]
-                };
-
-                document.getElementById('remit-amount').value = this.tempCheckoutData.grandTotal;
-                this.closeCartModal();
-                document.getElementById('remittance-modal').classList.remove('hidden');
-            }
-
-            closeRemittanceModal() {
-                document.getElementById('remittance-modal').classList.add('hidden');
-                document.getElementById('cart-checkout-modal').classList.remove('hidden');
-            }
-
-            async submitFinalOrder() {
-                const remitAmount = document.getElementById('remit-amount').value.trim();
-                const remitLast5 = document.getElementById('remit-last5').value.trim();
-                const name = document.getElementById('recipient-name').value.trim();
-                const phone = document.getElementById('recipient-phone').value.trim();
-                const store711 = document.getElementById('store-711').value.trim();
-                const storeFamily = document.getElementById('store-family').value.trim();
-                const intention = document.querySelector('input[name="order-intention"]:checked').value;
-
-                if (!remitAmount || !remitLast5 || !name || !phone || (!store711 && !storeFamily)) {
-                    return alert('請完整填寫匯款金額、後五碼、收件人姓名、手機，並至少填寫一間超商門市！');
-                }
+                const grandTotal = subtotal + shipping;
 
                 const orderData = {
                     orderId: 'ORD-' + Date.now().toString().slice(-6),
                     createdAt: new Date().toLocaleString(),
-                    userEmail: this.tempCheckoutData.email,
-                    userPhone4: this.tempCheckoutData.phone4,
-                    items: this.tempCheckoutData.items,
-                    subtotal: this.tempCheckoutData.subtotal,
-                    shipping: this.tempCheckoutData.shipping,
-                    grandTotal: this.tempCheckoutData.grandTotal,
-                    remitAmount,
-                    remitLast5,
-                    recipientName: name,
-                    recipientPhone: phone,
-                    store711: store711 || '未填',
-                    storeFamily: storeFamily || '未填',
-                    intention
+                    userEmail: email,
+                    userPhone4: phone4,
+                    items: [...this.cart],
+                    subtotal,
+                    shipping,
+                    grandTotal,
+                    remitAmount: grandTotal,
+                    remitLast5: '待回信',
+                    recipientName: '待回信',
+                    recipientPhone: '待回信',
+                    store711: '待回信',
+                    storeFamily: '待回信',
+                    intention: '待回信',
+                    isSettled: false
                 };
+
+                let existingOrders = JSON.parse(localStorage.getItem('seafood_orders')) || [];
+                existingOrders.unshift(orderData);
+                localStorage.setItem('seafood_orders', JSON.stringify(existingOrders));
 
                 try {
                     await fetch(this.googleSheetsApiUrl, {
@@ -439,19 +340,19 @@
                         body: JSON.stringify(orderData)
                     });
                 } catch (e) {
-                    console.log('試算表同步發送中', e);
+                    console.log('同步中', e);
                 }
 
-                alert(`🎉 訂單與匯款回報成功！\n\n訂單編號：${orderData.orderId}\n系統已將完整明細與匯款帳號寄送至：${orderData.userEmail}\n同步發送通知至管理者 twvisa2009@gmail.com`);
+                alert(`🎉 訂單已成功建立！\n\n訂單編號：${orderData.orderId}\n系統已發送含匯款帳號的信件至：${email}\n請安心前往轉帳，並將收件人姓名、手機、超商門市與匯款後 5 碼直接回信給我們即可！`);
 
                 this.cart = [];
                 localStorage.removeItem('seafood_cart');
                 this.updateCartBadge();
-                document.getElementById('remittance-modal').classList.add('hidden');
+                document.getElementById('cart-checkout-modal').classList.add('hidden');
             }
 
             openGuideModal() {
-                alert("【新人指南與出貨規則】\n1. 中午 12:00 限量開賣\n2. 滿 $3,000 免運，未滿 $2,000 運費 $130\n3. 填寫 Email 與手機後 4 碼即可輕鬆下單！");
+                alert("【新人指南與出貨規則】\n1. 隨時開放測試中\n2. 滿 $3,000 免運，未滿 $2,000 運費 $130\n3. 填寫 Email 與手機後 4 碼即可極速下單！");
             }
         }
 
